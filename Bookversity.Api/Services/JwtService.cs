@@ -32,26 +32,24 @@ namespace Bookversity.Api.Services
 
         public string GenerateJwtToken(ExtendedUser user, JwtSettings jwtSettings)
         {
-            var claims = new List<Claim>
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret));
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()), // sub = subject
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.UserName.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email)
+                }),
+
+                Expires = DateTime.Now.AddDays(jwtSettings.ExpirationInDays),
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256),
+                Audience = jwtSettings.Issuer,
+                Issuer = jwtSettings.Issuer
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiryDate = DateTime.Now.AddDays((double)jwtSettings.ExpirationInDays);
-
-            var jwtToken = new JwtSecurityToken(
-                issuer: jwtSettings.Issuer,
-                audience: jwtSettings.Issuer,
-                claims,
-                expires: expiryDate,
-                signingCredentials: credentials
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Bookversity.Api.Models;
 using Bookversity.Api.Services;
@@ -67,7 +68,6 @@ namespace Bookversity.Api.Controllers
                 if (correctPassword)
                 {
                     var jwtService = JwtService.Instance;
-                    //Console.WriteLine($"{_jwtSettings.Secret}");
                     return Ok(jwtService.GenerateJwtToken(user, _jwtSettings));
                 }
             }
@@ -77,9 +77,11 @@ namespace Bookversity.Api.Controllers
 
         [Authorize]
         [HttpGet("Test")]
-        public IActionResult Test()
+        public async Task<IActionResult> Test()
         {
-            return Ok();
+            var email = User.FindFirstValue(ClaimTypes.Name);
+            var user = await _userManager.FindByNameAsync(email);
+            return Ok(new { user.FirstName, user.LastName, user.Id });
         }
     }
 }
