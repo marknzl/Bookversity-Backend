@@ -30,6 +30,8 @@ namespace Bookversity.Api.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
+        public DateTime TimeCreated { get; set; }
+
         public bool Sold { get; set; }
         public bool InCart { get; set; }
     }
