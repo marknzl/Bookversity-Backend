@@ -83,5 +83,11 @@ namespace Bookversity.Api.Controllers
             var user = await _userManager.FindByNameAsync(email);
             return Ok(new { user.FirstName, user.LastName, user.Id });
         }
+
+        [HttpGet("NewFeatureTest")]
+        public IActionResult NewFeatureTest()
+        {
+            return Ok();
+        }
     }
 }
