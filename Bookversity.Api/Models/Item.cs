@@ -32,6 +32,9 @@ namespace Bookversity.Api.Models
 
         public DateTime TimeCreated { get; set; }
 
+        public string ItemImageUrl { get; set; }
+        public string ImageFileName { get; set; }
+
         public bool Sold { get; set; }
         public bool InCart { get; set; }
     }
