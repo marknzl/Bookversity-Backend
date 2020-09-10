@@ -1,7 +1,6 @@
 ﻿using Bookversity.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -42,6 +41,15 @@ namespace Bookversity.Api.Controllers
             await _appDbContext.SaveChangesAsync();
 
             return Ok(item);
+        }
+
+        [HttpGet("MyItems")]
+        public IActionResult MyItems()
+        {
+            string id = User.FindFirstValue("Id");
+            var items = _appDbContext.Items.Where(i => i.SellerId == id);
+
+            return Ok(items);
         }
     }
 }
