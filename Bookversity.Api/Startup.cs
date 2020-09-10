@@ -99,7 +99,7 @@ namespace Bookversity.Api
             services.AddCors();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseCors(builder => builder
                 .AllowAnyHeader()

@@ -8,6 +8,10 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200910005925_IdentityUserExtension.cs" />
     <Compile Remove="Migrations\20200910005925_IdentityUserExtension.Designer.cs" />
+    <Compile Remove="Migrations\20200910050408_AddedItems.cs" />
+    <Compile Remove="Migrations\20200910050408_AddedItems.Designer.cs" />
+    <Compile Remove="Migrations\20200910050538_AddedItems.cs" />
+    <Compile Remove="Migrations\20200910050538_AddedItems.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

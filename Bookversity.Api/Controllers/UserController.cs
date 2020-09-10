@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Bookversity.Api.Models;
+﻿using Bookversity.Api.Models;
 using Bookversity.Api.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Bookversity.Api.Controllers
 {
@@ -17,14 +14,14 @@ namespace Bookversity.Api.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private UserManager<ExtendedUser> _userManager;
-        private SignInManager<ExtendedUser> _signInManager;
-        private JwtSettings _jwtSettings;
+        private readonly UserManager<ExtendedUser> _userManager;
+        //private readonly SignInManager<ExtendedUser> _signInManager;
+        private readonly JwtSettings _jwtSettings;
 
-        public UserController(UserManager<ExtendedUser> userManager, SignInManager<ExtendedUser> signInManager, IOptionsSnapshot<JwtSettings> jwtSettings)
+        public UserController(UserManager<ExtendedUser> userManager, /*SignInManager<ExtendedUser> signInManager,*/ IOptionsSnapshot<JwtSettings> jwtSettings)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
+            //_signInManager = signInManager;
             _jwtSettings = jwtSettings.Value;
         }
 
@@ -67,8 +64,7 @@ namespace Bookversity.Api.Controllers
 
                 if (correctPassword)
                 {
-                    var jwtService = JwtService.Instance;
-                    return Ok(jwtService.GenerateJwtToken(user, _jwtSettings));
+                    return Ok(JwtService.GenerateJwtToken(user, _jwtSettings));
                 }
             }
 
@@ -82,12 +78,6 @@ namespace Bookversity.Api.Controllers
             var email = User.FindFirstValue(ClaimTypes.Name);
             var user = await _userManager.FindByNameAsync(email);
             return Ok(new { user.FirstName, user.LastName, user.Id });
-        }
-
-        [HttpGet("NewFeatureTest")]
-        public IActionResult NewFeatureTest()
-        {
-            return Ok();
         }
     }
 }

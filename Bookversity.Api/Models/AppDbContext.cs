@@ -9,5 +9,7 @@ namespace Bookversity.Api.Models
         {
 
         }
+
+        public DbSet<Item> Items { get; set; }
     }
 }
