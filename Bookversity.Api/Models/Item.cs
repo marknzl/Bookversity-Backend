@@ -34,6 +34,7 @@ namespace Bookversity.Api.Models
 
         public string ItemImageUrl { get; set; }
         public string ImageFileName { get; set; }
+        public string InUserCart { get; set; }
 
         public bool Sold { get; set; }
         public bool InCart { get; set; }

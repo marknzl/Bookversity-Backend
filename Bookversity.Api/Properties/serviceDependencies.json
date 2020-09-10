@@ -3,6 +3,10 @@
     "mssql1": {
       "type": "mssql",
       "connectionId": "sqlDB"
+    },
+    "storage1": {
+      "type": "storage",
+      "connectionId": "BlobStorageSettings/ConnectionString"
     }
   }
 }

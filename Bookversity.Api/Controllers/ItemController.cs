@@ -48,6 +48,7 @@ namespace Bookversity.Api.Controllers
                 TimeCreated = DateTime.Now,
                 ItemImageUrl = imageUploadResponse.ImageUrl,
                 ImageFileName = imageUploadResponse.ImageFileName,
+                InUserCart = "",
                 Sold = false,
                 InCart = false
             };
@@ -71,7 +72,7 @@ namespace Bookversity.Api.Controllers
         [HttpGet("Latest10")]
         public IActionResult Latest10()
         {
-            var items = _appDbContext.Items.OrderByDescending(i => i.Id).Where(i => !i.Sold).Take(10);
+            var items = _appDbContext.Items.OrderByDescending(i => i.Id).Where(i => !i.Sold && !i.InCart).Take(10);
             return Ok(items);
         }
 
@@ -79,6 +80,7 @@ namespace Bookversity.Api.Controllers
         public async Task<IActionResult> DeleteItem(int itemId)
         {
             var item = await _appDbContext.Items.FindAsync(itemId);
+
             if (item == null)
             {
                 return BadRequest();

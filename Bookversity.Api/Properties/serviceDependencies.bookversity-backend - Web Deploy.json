@@ -5,6 +5,12 @@
       "type": "mssql.azure",
       "connectionId": "sqlDB",
       "secretStore": "AzureAppSettings"
+    },
+    "storage1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup')]/providers/Microsoft.Storage/storageAccounts/bookversityimagestore",
+      "type": "storage.azure",
+      "connectionId": "BlobStorageSettings/ConnectionString",
+      "secretStore": "AzureAppSettings"
     }
   }
 }

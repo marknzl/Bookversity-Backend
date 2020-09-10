@@ -13,6 +13,10 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Azure;
+using Azure.Storage.Queues;
+using Azure.Storage.Blobs;
+using Azure.Core.Extensions;
 
 namespace Bookversity.Api
 {
@@ -101,6 +105,11 @@ namespace Bookversity.Api
                 .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddCors();
+            //services.AddAzureClients(builder =>
+            //{
+            //    builder.AddBlobServiceClient(Configuration["ConnectionStrings:BlobStorageSettings/ConnectionString:blob"], preferMsi: true);
+            //    builder.AddQueueServiceClient(Configuration["ConnectionStrings:BlobStorageSettings/ConnectionString:queue"], preferMsi: true);
+            //});
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -136,4 +145,29 @@ namespace Bookversity.Api
             });
         }
     }
+    //internal static class StartupExtensions
+    //{
+    //    public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
+    //    {
+    //        if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
+    //        {
+    //            return builder.AddBlobServiceClient(serviceUri);
+    //        }
+    //        else
+    //        {
+    //            return builder.AddBlobServiceClient(serviceUriOrConnectionString);
+    //        }
+    //    }
+    //    public static IAzureClientBuilder<QueueServiceClient, QueueClientOptions> AddQueueServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
+    //    {
+    //        if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
+    //        {
+    //            return builder.AddQueueServiceClient(serviceUri);
+    //        }
+    //        else
+    //        {
+    //            return builder.AddQueueServiceClient(serviceUriOrConnectionString);
+    //        }
+    //    }
+    //}
 }
