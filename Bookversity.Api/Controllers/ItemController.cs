@@ -1,4 +1,5 @@
 ﻿using Bookversity.Api.Models;
+using Bookversity.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -14,19 +15,29 @@ namespace Bookversity.Api.Controllers
     public class ItemController : ControllerBase
     {
         private readonly AppDbContext _appDbContext;
+        private readonly ImageStoreService _imageStoreService;
 
-        public ItemController(AppDbContext appDbContext)
+        public ItemController(AppDbContext appDbContext, ImageStoreService imageStoreService)
         {
             _appDbContext = appDbContext;
+            _imageStoreService = imageStoreService;
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateItem(NewItemModel newItemModel)
+        public async Task<IActionResult> CreateItem([FromForm] NewItemModel newItemModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
+
+            if (!(newItemModel.Image.Length > 0))
+            {
+                return BadRequest();
+            }
+
+            string userId = User.FindFirstValue("Id");
+            var imageUploadResponse = await _imageStoreService.UploadImage(userId, newItemModel.Image);
 
             var item = new Item
             {
@@ -35,6 +46,8 @@ namespace Bookversity.Api.Controllers
                 ItemDescription = newItemModel.ItemDescription,
                 Price = newItemModel.ItemPrice,
                 TimeCreated = DateTime.Now,
+                ItemImageUrl = imageUploadResponse.ImageUrl,
+                ImageFileName = imageUploadResponse.ImageFileName,
                 Sold = false,
                 InCart = false
             };
@@ -74,6 +87,8 @@ namespace Bookversity.Api.Controllers
             if (User.FindFirstValue("Id") != item.SellerId)
                 return BadRequest();
 
+            Console.WriteLine();
+            await _imageStoreService.DeleteImage(item);
             _appDbContext.Items.Remove(item);
             await _appDbContext.SaveChangesAsync();
 

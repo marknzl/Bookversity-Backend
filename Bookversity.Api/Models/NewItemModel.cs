@@ -17,5 +17,8 @@ namespace Bookversity.Api.Models
 
         [Required]
         public decimal ItemPrice { get; set; }
+
+        [Required]
+        public IFormFile Image { get; set; }
     }
 }

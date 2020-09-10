@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -15,14 +16,14 @@ namespace Bookversity.Api.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserManager<ExtendedUser> _userManager;
-        //private readonly SignInManager<ExtendedUser> _signInManager;
         private readonly JwtSettings _jwtSettings;
+        private readonly ImageStoreService _imageStoreService;
 
-        public UserController(UserManager<ExtendedUser> userManager, /*SignInManager<ExtendedUser> signInManager,*/ IOptionsSnapshot<JwtSettings> jwtSettings)
+        public UserController(UserManager<ExtendedUser> userManager, IOptionsSnapshot<JwtSettings> jwtSettings, ImageStoreService imageStoreService)
         {
             _userManager = userManager;
-            //_signInManager = signInManager;
             _jwtSettings = jwtSettings.Value;
+            _imageStoreService = imageStoreService;
         }
 
         [HttpPost("Register")]
@@ -42,6 +43,7 @@ namespace Bookversity.Api.Controllers
 
                 if (result.Succeeded)
                 {
+                    await _imageStoreService.CreateUserContainer(user.Id);
                     return Ok();
                 }
             }

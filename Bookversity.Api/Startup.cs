@@ -1,4 +1,5 @@
 using Bookversity.Api.Models;
+using Bookversity.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -66,10 +67,13 @@ namespace Bookversity.Api
             services.AddIdentity<ExtendedUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
 
+            services.Configure<StorageSettings>(Configuration.GetSection("BlobStorageSettings"));
             var jwtSettings = Configuration.GetSection("Jwt").Get<JwtSettings>();
             services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
 
             var key = Encoding.UTF8.GetBytes(jwtSettings.Secret);
+
+            services.AddScoped<ImageStoreService>();
 
             services.AddAuthentication(options =>
             {
