@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Bookversity.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly UserManager<ExtendedUser> _userManager;

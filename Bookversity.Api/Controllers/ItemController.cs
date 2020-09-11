@@ -11,7 +11,7 @@ namespace Bookversity.Api.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ItemController : ControllerBase
     {
         private readonly AppDbContext _appDbContext;
@@ -59,6 +59,22 @@ namespace Bookversity.Api.Controllers
             return Ok(item);
         }
 
+        [AllowAnonymous]
+        [HttpGet("GetItem")]
+        public async Task<IActionResult> GetItem(int id)
+        {
+            var item = await _appDbContext.Items.FindAsync(id);
+
+            if (item == null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                return Ok(item);
+            }
+        }
+
         [HttpGet("MyItems")]
         public IActionResult MyItems()
         {
@@ -72,7 +88,7 @@ namespace Bookversity.Api.Controllers
         [HttpGet("Latest10")]
         public IActionResult Latest10()
         {
-            var items = _appDbContext.Items.OrderByDescending(i => i.Id).Where(i => !i.Sold && !i.InCart).Take(10);
+            var items = _appDbContext.Items.OrderByDescending(i => i.Id).Where(i => !i.Sold && !i.InCart);
             return Ok(items);
         }
 
@@ -101,6 +117,11 @@ namespace Bookversity.Api.Controllers
         [HttpGet("Search")]
         public IActionResult Search(string itemName)
         {
+            if (itemName == null)
+            {
+                itemName = "";
+            }
+
             var items = _appDbContext.Items.Where(i => i.ItemName.ToLower().Contains(itemName.ToLower()) 
                                                     && !i.InCart 
                                                     && !i.Sold);
