@@ -17,6 +17,7 @@ using Microsoft.Extensions.Azure;
 using Azure.Storage.Queues;
 using Azure.Storage.Blobs;
 using Azure.Core.Extensions;
+using Bookversity.Api.Hubs;
 
 namespace Bookversity.Api
 {
@@ -105,6 +106,7 @@ namespace Bookversity.Api
                 .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddCors();
+            services.AddSignalR();
             //services.AddAzureClients(builder =>
             //{
             //    builder.AddBlobServiceClient(Configuration["ConnectionStrings:BlobStorageSettings/ConnectionString:blob"], preferMsi: true);
@@ -142,6 +144,7 @@ namespace Bookversity.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<RefreshHub>("/refreshHub");
             });
         }
     }
