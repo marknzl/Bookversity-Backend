@@ -66,7 +66,14 @@ namespace Bookversity.Api.Controllers
 
                 if (correctPassword)
                 {
-                    return Ok(JwtService.GenerateJwtToken(user, _jwtSettings));
+                    var loginResponse = new LoginResponse
+                    {
+                        UserId = user.Id,
+                        JwtToken = JwtService.GenerateJwtToken(user, _jwtSettings)
+                    };
+
+                    //return Ok(JwtService.GenerateJwtToken(user, _jwtSettings));
+                    return Ok(loginResponse);
                 }
             }
 
