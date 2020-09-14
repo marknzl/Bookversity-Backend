@@ -18,12 +18,14 @@ namespace Bookversity.Api.Controllers
         private readonly UserManager<ExtendedUser> _userManager;
         private readonly JwtSettings _jwtSettings;
         private readonly ImageStoreService _imageStoreService;
+        private readonly AppDbContext _appDbContext;
 
-        public UserController(UserManager<ExtendedUser> userManager, IOptionsSnapshot<JwtSettings> jwtSettings, ImageStoreService imageStoreService)
+        public UserController(UserManager<ExtendedUser> userManager, IOptionsSnapshot<JwtSettings> jwtSettings, ImageStoreService imageStoreService, AppDbContext appDbContext)
         {
             _userManager = userManager;
             _jwtSettings = jwtSettings.Value;
             _imageStoreService = imageStoreService;
+            _appDbContext = appDbContext;
         }
 
         [HttpPost("Register")]
@@ -87,6 +89,38 @@ namespace Bookversity.Api.Controllers
             var email = User.FindFirstValue(ClaimTypes.Name);
             var user = await _userManager.FindByNameAsync(email);
             return Ok(new { user.FirstName, user.LastName, user.Id });
+        }
+
+        [Authorize]
+        [HttpGet("Overview")]
+        public async Task<IActionResult> Overview()
+        {
+            string email = User.FindFirstValue(ClaimTypes.Name);
+
+            var user = await _userManager.FindByNameAsync(email);
+            var items = _appDbContext.Items.Where(i => i.SellerId == user.Id);
+
+            int itemsListed = items.Count();
+            int itemsForSale = 0;
+            int itemsSold = 0;
+            decimal totalDollarSales = 0;
+
+            items.Where(i => !i.Sold).ToList().ForEach(i => itemsForSale++);
+            items.Where(i => i.Sold).ToList().ForEach(i => itemsSold++);
+            items.Where(i => i.Sold).ToList().ForEach(i => totalDollarSales += i.Price);
+
+            var overviewModel = new OverviewModel()
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = email,
+                ItemsListed = itemsListed,
+                ItemsForSale = itemsForSale,
+                TotalItemsSold = itemsSold,
+                TotalDollarSales = totalDollarSales
+            };
+
+            return Ok(overviewModel);
         }
     }
 }

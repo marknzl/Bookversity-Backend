@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -68,9 +69,40 @@ namespace Bookversity.Api.Controllers
         {
             string userId = User.FindFirstValue("Id");
 
-            var itemsInCart = _appDbContext.Items.Where(i => i.InUserCart == userId);
+            var itemsInCart = _appDbContext.Items.Where(i => i.InUserCart == userId && !i.Sold);
 
             return Ok(itemsInCart);
+        }
+
+        [HttpPost("Checkout")]
+        public async Task<IActionResult> Checkout()
+        {
+            string userId = User.FindFirstValue("Id");
+            var itemsInCart = _appDbContext.Items.Where(i => i.InUserCart == userId && !i.Sold);
+
+            decimal total = 0;
+
+            foreach (var item in itemsInCart)
+            {
+                item.InCart = false;
+                item.InUserCart = "";
+                item.Sold = true;
+
+                total += item.Price;
+                _appDbContext.Entry(item).State = EntityState.Modified;
+            }
+
+            var order = new Order
+            {
+                UserId = userId,
+                Total = total,
+                TransactionDate = DateTime.Now
+            };
+
+            await _appDbContext.Orders.AddAsync(order);
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

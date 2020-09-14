@@ -101,6 +101,10 @@ namespace Bookversity.Api.Controllers
             {
                 return BadRequest();
             }
+            else if (item.InCart || item.Sold)
+            {
+                return BadRequest();
+            }
 
             if (User.FindFirstValue("Id") != item.SellerId)
                 return BadRequest();
