@@ -11,9 +11,12 @@ namespace Bookversity.Api.Models
     {
         [Key]
         [JsonProperty("id")]
-        public int Id;
+        public int Id { get; set; }
 
-        [Required]
-        public int OrderId;
+        public int ItemId { get; set; }
+        public Item Item { get; set; }
+
+        public int OrderId { get; set; }
+        public Order Order { get; set; }
     }
 }

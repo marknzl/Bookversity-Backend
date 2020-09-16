@@ -18,13 +18,13 @@ namespace Bookversity.Api.Models
         public string SellerId { get; set; }
 
         [Required]
+        public string SellerEmail { get; set; }
+
+        [Required]
         public string ItemName { get; set; }
 
         [Required]
         public string ItemDescription { get; set; }
-
-        //[Required]
-        //public byte[] Image { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
@@ -38,5 +38,8 @@ namespace Bookversity.Api.Models
 
         public bool Sold { get; set; }
         public bool InCart { get; set; }
+
+        [JsonIgnore]
+        public ItemPurchase ItemPurchase { get; set; }
     }
 }
