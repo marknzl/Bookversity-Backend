@@ -53,7 +53,6 @@ namespace Bookversity.Api.Services
 
             memoryStream.Close();
 
-
             return imageUploadResponse;
         }
 

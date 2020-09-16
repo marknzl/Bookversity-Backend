@@ -24,5 +24,7 @@ namespace Bookversity.Api.Models
 
         [Required]
         public DateTime TransactionDate { get; set; }
+
+        public IList<ItemPurchase> ItemsPurchased { get; set; }
     }
 }

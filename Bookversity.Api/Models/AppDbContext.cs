@@ -12,5 +12,6 @@ namespace Bookversity.Api.Models
 
         public DbSet<Item> Items { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<ItemPurchase> ItemPurchases { get; set; } 
     }
 }

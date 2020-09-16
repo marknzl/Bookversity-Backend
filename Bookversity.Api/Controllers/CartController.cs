@@ -78,7 +78,7 @@ namespace Bookversity.Api.Controllers
         public async Task<IActionResult> Checkout()
         {
             string userId = User.FindFirstValue("Id");
-            var itemsInCart = _appDbContext.Items.Where(i => i.InUserCart == userId && !i.Sold);
+            var itemsInCart = _appDbContext.Items.Where(i => i.InUserCart == userId && !i.Sold).ToList();
 
             decimal total = 0;
 
@@ -102,7 +102,20 @@ namespace Bookversity.Api.Controllers
             await _appDbContext.Orders.AddAsync(order);
             await _appDbContext.SaveChangesAsync();
 
-            return Ok();
+            foreach (var item in itemsInCart)
+            {
+                var itemPurchase = new ItemPurchase()
+                {
+                    ItemId = item.Id,
+                    OrderId = order.Id
+                };
+
+                await _appDbContext.ItemPurchases.AddAsync(itemPurchase);
+            }
+
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok(new { orderId = order.Id });
         }
     }
 }

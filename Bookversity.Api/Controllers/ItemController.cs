@@ -1,6 +1,7 @@
 ﻿using Bookversity.Api.Models;
 using Bookversity.Api.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -14,13 +15,15 @@ namespace Bookversity.Api.Controllers
     [Route("api/[controller]")]
     public class ItemController : ControllerBase
     {
+        private readonly UserManager<ExtendedUser> _userManager;
         private readonly AppDbContext _appDbContext;
         private readonly ImageStoreService _imageStoreService;
 
-        public ItemController(AppDbContext appDbContext, ImageStoreService imageStoreService)
+        public ItemController(AppDbContext appDbContext, ImageStoreService imageStoreService, UserManager<ExtendedUser> userManager)
         {
             _appDbContext = appDbContext;
             _imageStoreService = imageStoreService;
+            _userManager = userManager;
         }
 
         [HttpPost("Create")]
@@ -37,11 +40,13 @@ namespace Bookversity.Api.Controllers
             }
 
             string userId = User.FindFirstValue("Id");
+            var user = await _userManager.FindByIdAsync(userId);
             var imageUploadResponse = await _imageStoreService.UploadImage(userId, newItemModel.Image);
 
             var item = new Item
             {
                 SellerId = User.FindFirstValue("Id"),
+                SellerEmail = user.Email,
                 ItemName = newItemModel.ItemName,
                 ItemDescription = newItemModel.ItemDescription,
                 Price = newItemModel.ItemPrice,
@@ -79,7 +84,7 @@ namespace Bookversity.Api.Controllers
         public IActionResult MyItems()
         {
             string id = User.FindFirstValue("Id");
-            var items = _appDbContext.Items.Where(i => i.SellerId == id);
+            var items = _appDbContext.Items.Where(i => i.SellerId == id).OrderByDescending(i => i.Id);
 
             return Ok(items);
         }
