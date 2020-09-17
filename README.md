@@ -15,14 +15,18 @@ If you haven't already, you will need to register first. Scroll down to the `Use
 
 - Step 2:
 Scroll down to the `User` section, and locate the `/api/User/Login` endpoint. Click on it, then click 'Try it out'. Enter in your login details, and hit the blue 'Execute' button. If everything goes well, you should get a JSON response containing your JWT token:
-![Step 2 screenshot](screenshots/step_2.PNG)
+
+    ![Step 2 screenshot](screenshots/step_2.PNG)
 
 - Step 3: Copy the entirety of this JWT token. Scroll up and click on the green 'Authorize' button. In the 'Value' textbox, enter in 'Bearer {your_JWT_Token}', and click authorize. For example, if my JWT token was `test123`, I would enter the following:
-![Step 3 screenshot](screenshots/step_3.PNG)
+
+    ![Step 3 screenshot](screenshots/step_3.PNG)
 
 - Step 4:
 Congratulations! You should be authorized on all endpoints which require authorization. To test this out, scroll down to the `User` section, and locate the `/api/User/Test` endpoint. Click on it, then click 'Try it out'. If you're authorized properly, you should get a response like this:
-![Step 4 screenshot](screenshots/step_4.PNG)
+
+    ![Step 4 screenshot](screenshots/step_4.PNG)
+
 If you don't get a response like that, and instead get a '401 Unauthorized' response, make go through the steps again and make sure that you've copied the token properly, as well as entering it in using the correct format as shown in Step 3.
 
 <br>
