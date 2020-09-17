@@ -6,6 +6,13 @@ Backend for the Bookversity web application. Part of my submission for the Micro
 # Intro
 Bookversity (yes, not the greatest name, pls don't roast <3) is a simple web platform I built dedicated to facilitate the selling of second-hand university textbooks. This is the backend of the project, you can find the frontend [here](https://github.com/marknzl/bookversity-frontend). This backend is written in C# using the ASP.NET Core framework. This project utilizes CI/CD pipelines via Azure DevOps.
 
+# Advanced features integrated:
+- Custom Image Store service using Azure Blob Storage
+- Authentication via ASP.NET Core Identity & Authorization via JWT tokens
+- Realtime updates via SignalR
+- Mobile-first responsive UI
+- Relational database with relationships between tables
+
 ## Calling API endpoints via Swagger
 In order to access majority of API endpoints, you first need to authenticate and retrieve your JWT token which you will enter in Swagger's authorizations.
 
