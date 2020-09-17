@@ -6,6 +6,28 @@ Backend for the Bookversity web application. Part of my submission for the Micro
 # Intro
 Bookversity (yes, not the greatest name, pls don't roast <3) is a simple web platform I built dedicated to facilitate the selling of second-hand university textbooks. This is the backend of the project, you can find the frontend [here](https://github.com/marknzl/bookversity-frontend). This backend is written in C# using the ASP.NET Core framework. This project utilizes CI/CD pipelines via Azure DevOps.
 
+## Calling API endpoints via Swagger
+In order to access majority of API endpoints, you first need to authenticate and retrieve your JWT token which you will enter in Swagger's authorizations.
+
+### Steps:
+- Step 1:
+If you haven't already, you will need to register first. Scroll down to the `User` section, and locate the `/api/User/Register` endpoint. Click on it, then click 'Try it out'. Enter in your details, then click the blue 'Execute' button. If everything goes well, you should get a '200 OK' response.
+
+- Step 2:
+Scroll down to the `User` section, and locate the `/api/User/Login` endpoint. Click on it, then click 'Try it out'. Enter in your login details, and hit the blue 'Execute' button. If everything goes well, you should get a JSON response containing your JWT token:
+![Step 2 screenshot](screenshots/step_2.PNG)
+
+- Step 3: Copy the entirety of this JWT token. Scroll up and click on the green 'Authorize' button. In the 'Value' textbox, enter in 'Bearer {your_JWT_Token}', and click authorize. For example, if my JWT token was `test123`, I would enter the following:
+![Step 3 screenshot](screenshots/step_3.PNG)
+
+- Step 4:
+Congratulations! You should be authorized on all endpoints which require authorization. To test this out, scroll down to the `User` section, and locate the `/api/User/Test` endpoint. Click on it, then click 'Try it out'. If you're authorized properly, you should get a response like this:
+![Step 4 screenshot](screenshots/step_4.PNG)
+If you don't get a response like that, and instead get a '401 Unauthorized' response, make go through the steps again and make sure that you've copied the token properly, as well as entering it in using the correct format as shown in Step 3.
+
+<br>
+<br>
+
 # Backend architecture
 
 ## Datastore and ORM

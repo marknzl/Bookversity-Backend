@@ -66,8 +66,14 @@ namespace Bookversity.Api
                 options.UseSqlServer(Configuration.GetConnectionString("sqlDB"));
             });
 
-            services.AddIdentity<ExtendedUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>();
+            services.AddIdentity<ExtendedUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 5;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+            }).AddEntityFrameworkStores<AppDbContext>();
 
             services.Configure<StorageSettings>(Configuration.GetSection("BlobStorageSettings"));
             var jwtSettings = Configuration.GetSection("Jwt").Get<JwtSettings>();
