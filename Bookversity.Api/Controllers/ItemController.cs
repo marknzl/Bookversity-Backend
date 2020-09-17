@@ -69,10 +69,10 @@ namespace Bookversity.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("Latest10")]
-        public IActionResult Latest10()
+        [HttpGet("Latest")]
+        public IActionResult Latest()
         {
-            var items = _itemRepository.Latest10();
+            var items = _itemRepository.Latest();
             return Ok(items);
         }
 

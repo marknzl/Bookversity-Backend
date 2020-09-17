@@ -75,7 +75,7 @@ namespace Bookversity.Api.Repositories
             return await _appDbContext.Items.FindAsync(id);
         }
 
-        public IOrderedQueryable<Item> Latest10()
+        public IOrderedQueryable<Item> Latest()
         {
             return _appDbContext.Items.Where(i => !i.Sold && !i.InCart).OrderByDescending(i => i.Id);
         }

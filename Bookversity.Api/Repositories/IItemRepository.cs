@@ -12,7 +12,7 @@ namespace Bookversity.Api.Repositories
         Task<Item> CreateItem(NewItemModel newItemModel, ExtendedUser user);
         Task<Item> GetItem(int id);
         IOrderedQueryable<Item> MyItems(string userId);
-        IOrderedQueryable<Item> Latest10();
+        IOrderedQueryable<Item> Latest();
         Task<Item> DeleteItem(int id, string userId);
         IOrderedQueryable<Item> Search(string itemName);
     }
