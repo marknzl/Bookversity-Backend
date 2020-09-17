@@ -1,4 +1,6 @@
+using Bookversity.Api.Hubs;
 using Bookversity.Api.Models;
+using Bookversity.Api.Repositories;
 using Bookversity.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -13,12 +15,6 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.Extensions.Azure;
-using Azure.Storage.Queues;
-using Azure.Storage.Blobs;
-using Azure.Core.Extensions;
-using Bookversity.Api.Hubs;
-using Bookversity.Api.Repositories;
 
 namespace Bookversity.Api
 {
@@ -111,11 +107,6 @@ namespace Bookversity.Api
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddCors();
             services.AddSignalR();
-            //services.AddAzureClients(builder =>
-            //{
-            //    builder.AddBlobServiceClient(Configuration["ConnectionStrings:BlobStorageSettings/ConnectionString:blob"], preferMsi: true);
-            //    builder.AddQueueServiceClient(Configuration["ConnectionStrings:BlobStorageSettings/ConnectionString:queue"], preferMsi: true);
-            //});
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -152,29 +143,4 @@ namespace Bookversity.Api
             });
         }
     }
-    //internal static class StartupExtensions
-    //{
-    //    public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
-    //    {
-    //        if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
-    //        {
-    //            return builder.AddBlobServiceClient(serviceUri);
-    //        }
-    //        else
-    //        {
-    //            return builder.AddBlobServiceClient(serviceUriOrConnectionString);
-    //        }
-    //    }
-    //    public static IAzureClientBuilder<QueueServiceClient, QueueClientOptions> AddQueueServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
-    //    {
-    //        if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
-    //        {
-    //            return builder.AddQueueServiceClient(serviceUri);
-    //        }
-    //        else
-    //        {
-    //            return builder.AddQueueServiceClient(serviceUriOrConnectionString);
-    //        }
-    //    }
-    //}
 }

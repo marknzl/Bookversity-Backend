@@ -11,6 +11,11 @@
       "type": "storage.azure",
       "connectionId": "BlobStorageSettings/ConnectionString",
       "secretStore": "AzureAppSettings"
+    },
+    "signalr1": {
+      "type": "signalr",
+      "suggestion": "true",
+      "ignored": "true"
     }
   }
 }

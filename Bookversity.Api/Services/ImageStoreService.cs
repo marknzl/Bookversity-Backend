@@ -4,7 +4,6 @@ using Bookversity.Api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Bookversity.Api.Services

@@ -1,11 +1,8 @@
 ﻿using Bookversity.Api.Models;
 using Bookversity.Api.Repositories;
-using Bookversity.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
