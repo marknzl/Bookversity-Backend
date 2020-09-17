@@ -1,4 +1,5 @@
 ﻿using Bookversity.Api.Models;
+using Bookversity.Api.Repositories;
 using Bookversity.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,14 +17,12 @@ namespace Bookversity.Api.Controllers
     public class ItemController : ControllerBase
     {
         private readonly UserManager<ExtendedUser> _userManager;
-        private readonly AppDbContext _appDbContext;
-        private readonly ImageStoreService _imageStoreService;
+        private readonly IItemRepository _itemRepository;
 
-        public ItemController(AppDbContext appDbContext, ImageStoreService imageStoreService, UserManager<ExtendedUser> userManager)
+        public ItemController(UserManager<ExtendedUser> userManager, IItemRepository itemRepository)
         {
-            _appDbContext = appDbContext;
-            _imageStoreService = imageStoreService;
             _userManager = userManager;
+            _itemRepository = itemRepository;
         }
 
         [HttpPost("Create")]
@@ -41,25 +40,8 @@ namespace Bookversity.Api.Controllers
 
             string userId = User.FindFirstValue("Id");
             var user = await _userManager.FindByIdAsync(userId);
-            var imageUploadResponse = await _imageStoreService.UploadImage(userId, newItemModel.Image);
 
-            var item = new Item
-            {
-                SellerId = User.FindFirstValue("Id"),
-                SellerEmail = user.Email,
-                ItemName = newItemModel.ItemName,
-                ItemDescription = newItemModel.ItemDescription,
-                Price = newItemModel.ItemPrice,
-                TimeCreated = DateTime.Now,
-                ItemImageUrl = imageUploadResponse.ImageUrl,
-                ImageFileName = imageUploadResponse.ImageFileName,
-                InUserCart = "",
-                Sold = false,
-                InCart = false
-            };
-
-            _appDbContext.Items.Add(item);
-            await _appDbContext.SaveChangesAsync();
+            var item = await _itemRepository.CreateItem(newItemModel, user);
 
             return Ok(item);
         }
@@ -68,7 +50,7 @@ namespace Bookversity.Api.Controllers
         [HttpGet("GetItem")]
         public async Task<IActionResult> GetItem(int id)
         {
-            var item = await _appDbContext.Items.FindAsync(id);
+            var item = await _itemRepository.GetItem(id);
 
             if (item == null)
             {
@@ -84,7 +66,7 @@ namespace Bookversity.Api.Controllers
         public IActionResult MyItems()
         {
             string id = User.FindFirstValue("Id");
-            var items = _appDbContext.Items.Where(i => i.SellerId == id).OrderByDescending(i => i.Id);
+            var items = _itemRepository.MyItems(id);
 
             return Ok(items);
         }
@@ -93,31 +75,20 @@ namespace Bookversity.Api.Controllers
         [HttpGet("Latest10")]
         public IActionResult Latest10()
         {
-            var items = _appDbContext.Items.OrderByDescending(i => i.Id).Where(i => !i.Sold && !i.InCart);
+            var items = _itemRepository.Latest10();
             return Ok(items);
         }
 
         [HttpDelete("DeleteItem")]
         public async Task<IActionResult> DeleteItem(int itemId)
         {
-            var item = await _appDbContext.Items.FindAsync(itemId);
+            string userId = User.FindFirstValue("Id");
+            var item = await _itemRepository.DeleteItem(itemId, userId);
 
             if (item == null)
             {
                 return BadRequest();
             }
-            else if (item.InCart || item.Sold)
-            {
-                return BadRequest();
-            }
-
-            if (User.FindFirstValue("Id") != item.SellerId)
-                return BadRequest();
-
-            Console.WriteLine();
-            await _imageStoreService.DeleteImage(item);
-            _appDbContext.Items.Remove(item);
-            await _appDbContext.SaveChangesAsync();
 
             return Ok();
         }
@@ -131,9 +102,7 @@ namespace Bookversity.Api.Controllers
                 itemName = "";
             }
 
-            var items = _appDbContext.Items.Where(i => i.ItemName.ToLower().Contains(itemName.ToLower()) 
-                                                    && !i.InCart 
-                                                    && !i.Sold);
+            var items = _itemRepository.Search(itemName);
             return Ok(items);
         }
     }

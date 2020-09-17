@@ -1,4 +1,5 @@
 ﻿using Bookversity.Api.Models;
+using Bookversity.Api.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,20 +16,18 @@ namespace Bookversity.Api.Controllers
     [Route("api/[controller]")]
     public class OrdersController : ControllerBase
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly IOrdersRepository _ordersRepository;
 
-        public OrdersController(AppDbContext appDbContext)
+        public OrdersController(IOrdersRepository ordersRepository)
         {
-            _appDbContext = appDbContext; 
+            _ordersRepository = ordersRepository;
         }
 
         [HttpGet("MyOrders")]
         public IActionResult MyOrders()
         {
             string userId = User.FindFirstValue("Id");
-            var orders = _appDbContext.Orders.Include(o => o.ItemsPurchased)
-                .ThenInclude(ip => ip.Item).
-                Where(o => o.UserId == userId).ToList();
+            var orders = _ordersRepository.MyOrders(userId);
 
             return Ok(orders);
         }
@@ -37,16 +36,9 @@ namespace Bookversity.Api.Controllers
         public IActionResult ViewOrder(int orderId)
         {
             string userId = User.FindFirstValue("Id");
-            var order = _appDbContext.Orders.Include(o => o.ItemsPurchased)
-                .ThenInclude(ip => ip.Item)
-                .Where(o => o.UserId == userId && o.Id == orderId).First();
+            var order = _ordersRepository.ViewOrder(orderId, userId);
 
             if (order == null)
-            {
-                return BadRequest();
-            }
-
-            if (order.UserId != userId)
             {
                 return BadRequest();
             }

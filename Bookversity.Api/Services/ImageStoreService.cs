@@ -45,13 +45,7 @@ namespace Bookversity.Api.Services
             };
 
             var blobClient = blobContainerClient.GetBlobClient(uniqueFileName);
-            var memoryStream = new MemoryStream();
-
-            await imageFile.CopyToAsync(memoryStream);
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            await blobClient.UploadAsync(memoryStream, true);
-
-            memoryStream.Close();
+            await blobClient.UploadAsync(imageFile.OpenReadStream(), true);
 
             return imageUploadResponse;
         }
