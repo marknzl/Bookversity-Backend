@@ -18,6 +18,7 @@ using Azure.Storage.Queues;
 using Azure.Storage.Blobs;
 using Azure.Core.Extensions;
 using Bookversity.Api.Hubs;
+using Bookversity.Api.Repositories;
 
 namespace Bookversity.Api
 {
@@ -79,6 +80,9 @@ namespace Bookversity.Api
             var key = Encoding.UTF8.GetBytes(jwtSettings.Secret);
 
             services.AddScoped<ImageStoreService>();
+            services.AddScoped<IItemRepository, SqlItemRepository>();
+            services.AddScoped<ICartRepository, SqlCartRepository>();
+            services.AddScoped<IOrdersRepository, SqlOrdersRepository>();
 
             services.AddAuthentication(options =>
             {

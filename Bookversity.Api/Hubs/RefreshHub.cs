@@ -10,9 +10,6 @@ namespace Bookversity.Api.Hubs
     {
         public override async Task OnConnectedAsync()
         {
-            //string clientIp = Context.GetHttpContext().Connection.RemoteIpAddress.ToString();
-            //await Clients.Others.SendAsync("RefreshFromUser", clientIp);
-
             await base.OnConnectedAsync();
         }
 

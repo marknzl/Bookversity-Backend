@@ -1,4 +1,5 @@
 ﻿using Bookversity.Api.Models;
+using Bookversity.Api.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,34 +15,23 @@ namespace Bookversity.Api.Controllers
     [Route("api/[controller]")]
     public class CartController : ControllerBase
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly ICartRepository _cartRepository;
 
-        public CartController(AppDbContext appDbContext)
+        public CartController(ICartRepository cartRepository)
         {
-            _appDbContext = appDbContext;
+            _cartRepository = cartRepository;
         }
 
         [HttpPost("Add")]
         public async Task<IActionResult> AddToCart(int itemId)
         {
-            var item = await _appDbContext.Items.FindAsync(itemId);
+            string userId = User.FindFirstValue("Id");
+            var item = await _cartRepository.AddToCart(itemId, userId);
 
             if (item == null)
             {
                 return BadRequest();
             }
-
-            string userId = User.FindFirstValue("Id");
-
-            if (userId == item.SellerId)
-            {
-                return BadRequest();
-            }
-
-            item.InCart = true;
-            item.InUserCart = userId;
-            _appDbContext.Entry(item).State = EntityState.Modified;
-            await _appDbContext.SaveChangesAsync();
 
             return Ok();
         }
@@ -49,17 +39,13 @@ namespace Bookversity.Api.Controllers
         [HttpPost("Remove")]
         public async Task<IActionResult> RemoveFromCart(int itemId)
         {
-            var item = await _appDbContext.Items.FindAsync(itemId);
+            string userId = User.FindFirstValue("Id");
+            var item = await _cartRepository.RemoveFromCart(itemId, userId);
 
             if (item == null)
             {
                 return BadRequest();
             }
-
-            item.InCart = false;
-            item.InUserCart = "";
-            _appDbContext.Entry(item).State = EntityState.Modified;
-            await _appDbContext.SaveChangesAsync();
 
             return Ok();
         }
@@ -68,8 +54,7 @@ namespace Bookversity.Api.Controllers
         public IActionResult MyCart()
         {
             string userId = User.FindFirstValue("Id");
-
-            var itemsInCart = _appDbContext.Items.Where(i => i.InUserCart == userId && !i.Sold);
+            var itemsInCart = _cartRepository.MyCart(userId);
 
             return Ok(itemsInCart);
         }
@@ -78,42 +63,7 @@ namespace Bookversity.Api.Controllers
         public async Task<IActionResult> Checkout()
         {
             string userId = User.FindFirstValue("Id");
-            var itemsInCart = _appDbContext.Items.Where(i => i.InUserCart == userId && !i.Sold).ToList();
-
-            decimal total = 0;
-
-            foreach (var item in itemsInCart)
-            {
-                item.InCart = false;
-                item.InUserCart = "";
-                item.Sold = true;
-
-                total += item.Price;
-                _appDbContext.Entry(item).State = EntityState.Modified;
-            }
-
-            var order = new Order
-            {
-                UserId = userId,
-                Total = total,
-                TransactionDate = DateTime.Now
-            };
-
-            await _appDbContext.Orders.AddAsync(order);
-            await _appDbContext.SaveChangesAsync();
-
-            foreach (var item in itemsInCart)
-            {
-                var itemPurchase = new ItemPurchase()
-                {
-                    ItemId = item.Id,
-                    OrderId = order.Id
-                };
-
-                await _appDbContext.ItemPurchases.AddAsync(itemPurchase);
-            }
-
-            await _appDbContext.SaveChangesAsync();
+            var order = await _cartRepository.Checkout(userId);
 
             return Ok(new { orderId = order.Id });
         }
